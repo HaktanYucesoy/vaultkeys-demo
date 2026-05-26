@@ -4,20 +4,27 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cart — VaultKeys</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: { extend: { colors: { brand: { DEFAULT: '#00E5A0', dark: '#00C88B' }, surface: { DEFAULT: '#0A0D14', card: '#111520', elevated: '#161B26', border: '#1E2535' } } } }
+      theme: { extend: { colors: { brand: { DEFAULT: '#00E5A0', dark: '#00C88B' }, surface: { DEFAULT: '#080B10', card: '#0D1117', elevated: '#161B26', border: '#1C2333' } } } }
     }
   </script>
   <style>
-    body { background: #0A0D14; animation: pageEnter .35s ease both; }
+    body { background: #080B10; font-family: 'DM Sans', sans-serif; animation: pageEnter .35s ease both; }
     @keyframes pageEnter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
     body.page-exit { animation: pageExit .2s ease forwards; }
     @keyframes pageExit { to { opacity: 0; transform: translateY(-4px); } }
-    .glow-brand { box-shadow: 0 0 40px #00E5A018, 0 0 80px #00E5A008; }
-    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #0A0D14; } ::-webkit-scrollbar-thumb { background: #1E2535; border-radius: 3px; }
+    .font-display { font-family: 'Syne', sans-serif; }
+    .btn-glow { box-shadow: 0 0 20px #00E5A025, 0 0 40px #00E5A010; transition: all 0.2s ease; }
+    .btn-glow:hover { box-shadow: 0 0 30px #00E5A050, 0 0 60px #00E5A020; transform: translateY(-1px); }
+    @keyframes itemRemove { to { opacity: 0; transform: translateX(-10px) scaleY(0.7); max-height: 0; padding-top: 0; padding-bottom: 0; margin-bottom: 0; border-width: 0; } }
+    .item-removing { animation: itemRemove .28s ease forwards; overflow: hidden; pointer-events: none; }
+    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #080B10; } ::-webkit-scrollbar-thumb { background: #1C2333; border-radius: 3px; }
   </style>
 </head>
 <body class="text-gray-100 font-sans antialiased">
@@ -25,9 +32,7 @@
 <nav class="sticky top-0 z-50 border-b border-surface-border bg-surface/95 backdrop-blur-xl">
   <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-14">
     <a href="index.html" class="flex items-center gap-2 font-extrabold text-lg tracking-tight">
-      <div class="w-7 h-7 rounded-lg bg-brand/10 border border-brand/20 flex items-center justify-center">
-        <span class="text-brand text-base">⚡</span>
-      </div>
+      <svg class="w-7 h-7" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 3L24.1244 9V21L14 27L3.87564 21V9L14 3Z" stroke="#00E5A0" stroke-width="1.25" fill="rgba(0,229,160,0.08)"/><path d="M14 9L19.5 12.25V18.75L14 22L8.5 18.75V12.25L14 9Z" fill="#00E5A0" fill-opacity="0.45"/></svg>
       <span>Vault<span class="text-brand">Keys</span></span>
     </a>
     <div class="flex items-center gap-2 text-xs text-gray-600">
@@ -75,7 +80,7 @@
             <span>Total</span><span class="text-brand" id="total-price">$0.00</span>
           </div>
 
-          <a href="checkout.html" id="checkout-btn" class="block w-full py-3.5 bg-brand text-black font-bold rounded-xl hover:bg-brand-dark transition text-sm text-center glow-brand">
+          <a href="checkout.html" id="checkout-btn" class="block w-full py-3.5 bg-brand text-black font-bold rounded-xl hover:bg-brand-dark text-sm text-center btn-glow">
             Proceed to Checkout →
           </a>
 
@@ -115,7 +120,7 @@
     }
 
     container.innerHTML = cart.map(item => `
-      <div class="flex items-center gap-4 p-4 rounded-2xl bg-surface-card border border-surface-border mb-3 group">
+      <div data-item-id="${item.id}" class="flex items-center gap-4 p-4 rounded-2xl bg-surface-card border border-surface-border mb-3 group">
         <div class="w-16 h-16 rounded-xl flex-shrink-0 overflow-hidden">
           <div class="w-full h-full bg-gradient-to-br ${item.color || 'from-gray-700 to-gray-900'} flex items-center justify-center text-2xl">🎮</div>
         </div>
@@ -135,7 +140,15 @@
     updateTotals();
   }
 
-  function removeItem(id) { VKCart.removeItem(id); render(); }
+  function removeItem(id) {
+    const el = document.querySelector(`[data-item-id="${id}"]`);
+    if (el) {
+      el.classList.add('item-removing');
+      setTimeout(() => { VKCart.removeItem(id); render(); }, 280);
+    } else {
+      VKCart.removeItem(id); render();
+    }
+  }
 
   function updateTotals() {
     const subtotal = VKCart.getTotal();

@@ -4,21 +4,25 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Browse Games — VaultKeys</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: { extend: { colors: { brand: { DEFAULT: '#00E5A0', dark: '#00C88B' }, surface: { DEFAULT: '#0A0D14', card: '#111520', elevated: '#161B26', border: '#1E2535' } } } }
+      theme: { extend: { colors: { brand: { DEFAULT: '#00E5A0', dark: '#00C88B' }, surface: { DEFAULT: '#080B10', card: '#0D1117', elevated: '#161B26', border: '#1C2333' } } } }
     }
   </script>
   <style>
-    body { background: #0A0D14; animation: pageEnter .35s ease both; }
+    body { background: #080B10; font-family: 'DM Sans', sans-serif; animation: pageEnter .35s ease both; }
     @keyframes pageEnter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
     body.page-exit { animation: pageExit .2s ease forwards; }
     @keyframes pageExit { to { opacity: 0; transform: translateY(-4px); } }
-    .card-hover { transition: all .2s ease; }
-    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 32px #00000040, 0 0 0 1px #00E5A015; }
-    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #0A0D14; } ::-webkit-scrollbar-thumb { background: #1E2535; border-radius: 3px; }
+    .font-display { font-family: 'Syne', sans-serif; }
+    .game-card { transition: all .25s ease; }
+    .game-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,.5), 0 0 0 1px #00E5A025; }
+    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #080B10; } ::-webkit-scrollbar-thumb { background: #1C2333; border-radius: 3px; }
   </style>
 </head>
 <body class="text-gray-100 font-sans antialiased">
@@ -26,9 +30,7 @@
 <nav class="sticky top-0 z-50 border-b border-surface-border bg-surface/95 backdrop-blur-xl">
   <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-14">
     <a href="index.html" class="flex items-center gap-2 font-extrabold text-lg tracking-tight">
-      <div class="w-7 h-7 rounded-lg bg-brand/10 border border-brand/20 flex items-center justify-center">
-        <span class="text-brand text-base">⚡</span>
-      </div>
+      <svg class="w-7 h-7" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 3L24.1244 9V21L14 27L3.87564 21V9L14 3Z" stroke="#00E5A0" stroke-width="1.25" fill="rgba(0,229,160,0.08)"/><path d="M14 9L19.5 12.25V18.75L14 22L8.5 18.75V12.25L14 9Z" fill="#00E5A0" fill-opacity="0.45"/></svg>
       <span>Vault<span class="text-brand">Keys</span></span>
     </a>
     <div class="flex items-center gap-3">
@@ -144,7 +146,7 @@
     if (!games.length) { grid.innerHTML = ''; noRes.classList.remove('hidden'); return; }
     noRes.classList.add('hidden');
     grid.innerHTML = games.map(g => `
-      <a href="product.html?slug=${g.slug}" class="card-hover group rounded-2xl overflow-hidden bg-surface-card border border-surface-border">
+      <a href="product.html?slug=${g.slug}" class="game-card group rounded-2xl overflow-hidden bg-surface-card border border-surface-border">
         <div class="relative h-44 overflow-hidden bg-gradient-to-br ${g.color}">
           <img src="${g.image}" alt="${g.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" loading="lazy"/>
           ${g.badge ? `<span class="absolute top-2.5 left-2.5 text-xs px-2 py-0.5 bg-brand text-black font-bold rounded-md z-10">${g.badge}</span>` : ''}
