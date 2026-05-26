@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product — VaultKeys</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: { brand: { DEFAULT: '#00E5A0', dark: '#00C88B' }, surface: { DEFAULT: '#0A0D14', card: '#111520', elevated: '#161B26', border: '#1E2535' } } } }
+    }
+  </script>
+  <style>
+    body { background: #0A0D14; animation: pageEnter .35s ease both; }
+    @keyframes pageEnter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    body.page-exit { animation: pageExit .2s ease forwards; }
+    @keyframes pageExit { to { opacity: 0; transform: translateY(-4px); } }
+    .gradient-text { background: linear-gradient(135deg, #00E5A0, #00B4D8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .glow-brand { box-shadow: 0 0 40px #00E5A018, 0 0 80px #00E5A008; }
+    .card-hover { transition: all .2s ease; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 32px #00000040, 0 0 0 1px #00E5A015; }
+    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #0A0D14; } ::-webkit-scrollbar-thumb { background: #1E2535; border-radius: 3px; }
+  </style>
+</head>
+<body class="text-gray-100 font-sans antialiased">
+
+<nav class="sticky top-0 z-50 border-b border-surface-border bg-surface/95 backdrop-blur-xl">
+  <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-14">
+    <a href="index.html" class="flex items-center gap-2 font-extrabold text-lg tracking-tight">
+      <div class="w-7 h-7 rounded-lg bg-brand/10 border border-brand/20 flex items-center justify-center">
+        <span class="text-brand text-base">⚡</span>
+      </div>
+      <span>Vault<span class="text-brand">Keys</span></span>
+    </a>
+    <div class="flex items-center gap-2">
+      <a href="games.html" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-surface-elevated transition text-sm">Browse</a>
+      <a href="cart.html" class="relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-surface-elevated transition text-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        Cart
+        <span id="cart-badge" class="hidden px-1.5 py-0.5 text-xs bg-brand text-black font-bold rounded-full leading-none"></span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div id="product-content" class="max-w-7xl mx-auto px-4 py-10"></div>
+
+<div class="max-w-7xl mx-auto px-4 pb-16">
+  <h2 class="text-xl font-bold mb-5">You Might Also Like</h2>
+  <div id="related-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/tracking.js"></script>
+<script>
+  const slug = new URLSearchParams(window.location.search).get('slug');
+  const product = getProductBySlug(slug);
+
+  if (!product) {
+    document.getElementById('product-content').innerHTML = `
+      <div class="text-center py-24">
+        <div class="text-5xl mb-4">😕</div>
+        <h2 class="text-2xl font-bold mb-3">Game Not Found</h2>
+        <a href="games.html" class="text-brand hover:underline">← Back to Browse</a>
+      </div>`;
+  } else {
+    document.title = `${product.title} — VaultKeys`;
+    const stars = Array.from({length:5}, (_,i) => `<span class="${i < Math.round(product.rating) ? 'text-yellow-400' : 'text-gray-700'}">★</span>`).join('');
+
+    document.getElementById('product-content').innerHTML = `
+      <nav class="text-xs text-gray-600 mb-8 flex items-center gap-1.5">
+        <a href="index.html" class="hover:text-gray-300 transition">Home</a>
+        <span>›</span>
+        <a href="games.html?category=${product.category}" class="hover:text-gray-300 transition capitalize">${product.category}</a>
+        <span>›</span>
+        <span class="text-gray-400">${product.title}</span>
+      </nav>
+
+      <div class="grid md:grid-cols-3 gap-10">
+        <div class="md:col-span-2">
+          <!-- Cover art -->
+          <div class="relative rounded-2xl overflow-hidden bg-gradient-to-br ${product.color} h-72 md:h-80 mb-8 group">
+            <img src="${product.image}" alt="${product.title}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            ${product.badge ? `<span class="absolute top-4 left-4 text-xs px-3 py-1 bg-brand text-black font-bold rounded-lg z-10">${product.badge}</span>` : ''}
+            ${product.discount > 0 ? `<span class="absolute top-4 right-4 text-xs px-3 py-1 bg-red-500 text-white font-bold rounded-lg z-10">-${product.discount}% OFF</span>` : ''}
+            <div class="absolute bottom-0 left-0 right-0 p-6 z-10">
+              <div class="text-3xl md:text-4xl font-extrabold mb-1 drop-shadow-lg">${product.title}</div>
+              <div class="text-white/70 text-sm">${product.subtitle}</div>
+            </div>
+          </div>
+
+          <h2 class="font-bold text-lg mb-3">About This Game</h2>
+          <p class="text-gray-400 leading-relaxed mb-6 text-sm">${product.description}</p>
+
+          <div class="flex flex-wrap gap-2 mb-6">
+            ${product.tags.map(t => `<span class="px-3 py-1 text-xs rounded-full bg-surface-elevated border border-surface-border text-gray-400">${t}</span>`).join('')}
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+            <div class="p-3 rounded-xl bg-surface-elevated border border-surface-border">
+              <div class="text-xs text-gray-500 mb-1">Publisher</div>
+              <div class="font-medium text-sm">${product.publisher}</div>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-elevated border border-surface-border">
+              <div class="text-xs text-gray-500 mb-1">Platform</div>
+              <div class="font-medium text-sm">${product.platform}</div>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-elevated border border-surface-border">
+              <div class="text-xs text-gray-500 mb-1">Category</div>
+              <div class="font-medium text-sm capitalize">${product.category}</div>
+            </div>
+            <div class="p-3 rounded-xl bg-brand/5 border border-brand/10">
+              <div class="text-xs text-gray-500 mb-1">Delivery</div>
+              <div class="font-medium text-sm text-brand">Instant ⚡</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buy box -->
+        <div>
+          <div class="sticky top-20 rounded-2xl bg-surface-card border border-surface-border overflow-hidden">
+            <div class="bg-gradient-to-br ${product.color} h-2"></div>
+            <div class="p-6">
+              <div class="flex items-baseline gap-3 mb-1">
+                <span class="text-4xl font-extrabold text-brand">${formatPrice(product.price)}</span>
+                ${product.originalPrice > product.price ? `<span class="text-lg text-gray-600 line-through">${formatPrice(product.originalPrice)}</span>` : ''}
+              </div>
+              ${product.discount > 0 ? `<div class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 bg-red-500/10 border border-red-500/15 text-red-400 rounded-lg mb-4">You save ${formatPrice(product.originalPrice - product.price)} (${product.discount}% off)</div>` : '<div class="mb-4"></div>'}
+
+              <div class="flex items-center gap-1.5 text-sm mb-5">
+                <div class="flex">${stars}</div>
+                <span class="font-semibold">${product.rating}</span>
+                <span class="text-gray-500 text-xs">(${product.reviews.toLocaleString()} reviews)</span>
+              </div>
+
+              <div class="space-y-2 text-xs text-gray-500 mb-5 pb-5 border-b border-surface-border">
+                <div class="flex items-center gap-2"><span class="text-brand">✓</span> Instant delivery to email</div>
+                <div class="flex items-center gap-2"><span class="text-brand">✓</span> Activate on Steam</div>
+                <div class="flex items-center gap-2"><span class="text-brand">✓</span> Works worldwide</div>
+                <div class="flex items-center gap-2"><span class="text-brand">✓</span> No DRM restrictions</div>
+              </div>
+
+              <button id="add-to-cart-btn" class="w-full py-3.5 bg-brand text-black font-bold rounded-xl hover:bg-brand-dark transition text-sm mb-2.5 glow-brand">
+                Add to Cart
+              </button>
+              <a href="cart.html" class="block w-full py-3 bg-surface-elevated border border-surface-border text-white font-semibold rounded-xl hover:border-brand/30 transition text-sm text-center">
+                View Cart
+              </a>
+
+              <div class="mt-4 p-3 rounded-xl bg-surface-elevated border border-surface-border text-xs text-gray-500 flex items-center gap-2">
+                <span class="text-brand">🔒</span>
+                <span>Secure SSL checkout — Visa · Mastercard · PayPal</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+
+    document.getElementById('add-to-cart-btn').addEventListener('click', () => {
+      VKCart.addItem(product);
+      const btn = document.getElementById('add-to-cart-btn');
+      btn.textContent = '✓ Added to Cart!';
+      btn.classList.remove('bg-brand', 'hover:bg-brand-dark');
+      btn.classList.add('bg-green-500', 'hover:bg-green-600');
+      setTimeout(() => {
+        btn.textContent = 'Add to Cart';
+        btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+        btn.classList.add('bg-brand', 'hover:bg-brand-dark');
+      }, 1800);
+    });
+
+    const related = PRODUCTS.filter(p => p.category === product.category && p.slug !== product.slug).slice(0, 4);
+    related.forEach(g => {
+      document.getElementById('related-grid').innerHTML += `
+        <a href="product.html?slug=${g.slug}" class="card-hover group rounded-2xl overflow-hidden bg-surface-card border border-surface-border">
+          <div class="h-28 overflow-hidden bg-gradient-to-br ${g.color} relative">
+            <img src="${g.image}" alt="${g.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" loading="lazy"/>
+            ${g.discount > 0 ? `<span class="absolute top-2 right-2 text-xs px-1.5 py-0.5 bg-red-500/90 text-white font-bold rounded-md z-10">-${g.discount}%</span>` : ''}
+          </div>
+          <div class="p-3">
+            <div class="font-semibold text-sm group-hover:text-brand transition truncate">${g.title}</div>
+            <div class="text-brand font-bold text-sm mt-1">${formatPrice(g.price)}</div>
+          </div>
+        </a>`;
+    });
+  }
+
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href || href.startsWith('#') || href.startsWith('http') || a.target === '_blank') return;
+    e.preventDefault();
+    document.body.classList.add('page-exit');
+    setTimeout(() => { window.location.href = href; }, 180);
+  });
+</script>
+</body>
+</html>
