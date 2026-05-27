@@ -97,8 +97,11 @@ const VKTracking = (() => {
 
     console.log('[VKTracking] S2S GET firing:', url);
 
+    const headers = {};
+    if (ADPAIR_CONFIG.apiKey) headers['Authorization'] = `Bearer ${ADPAIR_CONFIG.apiKey}`;
+
     try {
-      const res = await fetch(url, { method: 'GET' });
+      const res = await fetch(url, { method: 'GET', headers });
       const body = await res.json();
       console.log('[VKTracking] S2S GET response:', body);
       return { method: 's2s_get', url, status: res.status, response: body };
@@ -128,10 +131,13 @@ const VKTracking = (() => {
 
     console.log('[VKTracking] S2S POST firing:', ADPAIR_CONFIG.postbackUrl, payload);
 
+    const headers = { 'Content-Type': 'application/json' };
+    if (ADPAIR_CONFIG.apiKey) headers['Authorization'] = `Bearer ${ADPAIR_CONFIG.apiKey}`;
+
     try {
       const res = await fetch(ADPAIR_CONFIG.postbackUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(payload),
       });
       const body = await res.json();

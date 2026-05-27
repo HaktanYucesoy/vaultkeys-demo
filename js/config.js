@@ -16,6 +16,9 @@ const ADPAIR_CONFIG = {
   // VaultKeys program ID on AdPair (fill after creating program in AdPair)
   programId: 'FILL_AFTER_SETUP',
 
+  // AdPair API key — scope: conversions (staging only, do NOT use production key here)
+  apiKey: 'adpr_my9BsJUzA8t6u5WhVKexW6iWJ2Z6oYd4OulVAyhshmk',
+
   // Cookie / localStorage key for click_id persistence
   clickIdKey: 'vk_click_id',
   utmKey: 'vk_utm',
